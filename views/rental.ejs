@@ -1,0 +1,79 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.83.1">
+  <title>Movie Retal Inc </title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+  <!-- Custom styles for this template -->
+  <link href="rental.css" rel="stylesheet" type="text/css">
+
+</head>
+  <body class="bg-light">
+
+<div class="container">
+  <main>
+    <div class="row g-5">
+      <div class="col-md-5 col-lg-4 order-md-last">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-primary">Your cart</span>
+          <span class="badge bg-primary rounded-pill">1</span>
+        </h4>
+         <form class=""  action="/<%-movie.MOVIE_ID%>/<%-movie.PRICE%>" method="post">
+        <ul class="list-group mb-3">
+          <li class="list-group-item d-flex justify-content-between lh-sm">
+            <div>
+              <h6 class="my-0"> <%-movie.MOVIE_TITLE%> </h6>
+              <small class="text-muted"><%-movie.GENRE%></small>
+            </div>
+            <span class="text-muted">$<%-movie.PRICE%></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between lh-sm">
+            <div>
+              <h6 class="my-0"> Discount </h6>
+              <small class="text-muted">for movies older than 5 years</small>
+            </div>
+            <span class="text-muted"></span>
+          </li>
+
+
+
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Total (USD)</span>
+            <strong id="cost">$<%-movie.PRICE%></strong>
+          </li>
+        </ul>
+
+
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Promo code">
+            <button type="submit" class="btn btn-secondary">Rent</button>
+          </div>
+        </form>
+      </div>
+
+
+    </div>
+  </main>
+
+
+</div>
+
+
+    <script src="/docs/5.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+
+      <script src="form-validation.js"></script>
+      <script type="text/javascript" src="engine.js">
+
+      </script>
+        </body>
+      </html>

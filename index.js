@@ -26,14 +26,33 @@ trustServerCertificate: true // change to true for local dev / self-signed certs
 
 // connect to your database
 
+const pool1 = new sql.ConnectionPool(config);
+
+const pool1Connect = pool1.connect();
+
+pool1.on('error', err => {
+    console.log(err);
+});
 
 
-function rentalTime(){
+async function messageHandler(q) {
+    await pool1Connect; // ensures that the pool has been created
+    try {
+        const request = pool1.request(); // or: new sql.Request(pool1)
+        const result = await request.query(q)
+        //console.log(result);
+        return result;
+    } catch (err) {
+        console.error('SQL error', err);
+    }
+}
+
+function rentalTime(p=0){
   let ts = Date.now();
   let date_ob = new Date(ts);
   let date = date_ob.getDate();
   let month = date_ob.getMonth() + 1;
-  let year = date_ob.getFullYear();
+  let year = date_ob.getFullYear()+p;
 
   //date & time in YYYY.MM.DD format
   let RENTAL_DATE=year + "." + month + "." + date;
@@ -43,56 +62,55 @@ function rentalTime(){
 
 
 
+
 app.get('/', function (req, res) {
 
 
-  sql.connect(config, function (err) {
+  (async () => {
+    let movies=await messageHandler('use CHOLOFLIX ;select * from MOVIES');
 
-      if (err) console.log(err);
-
-      // create Request object
-      var request = new sql.Request();
-      // query to the database and get the records
-      request.query('use CHOLOFLIX ;select * from MOVIES order by RATING DESC', function (err, recordset) {
-
-          if (err) console.log(err);
-
-          // send records as a response
-          res.render("home",{
-            mainmovie: recordset.recordsets[0][0],
-            movie: recordset.recordsets[0][1],
-            movie3:recordset.recordsets[0][2]
-          });
-
-      });
-
-
-  });
+    res.render("home",{
+        mainmovie: movies.recordsets[0][0],
+        movie:movies.recordsets[0][1],
+        movie3:movies.recordsets[0][2]
+    });
+  })()
 
 
 });
 
 
+app.get('/orders', function (req, res) {
 
 
 
-app.get("/:MOVIE_ID", function (req, res) {
-
-  var request = new sql.Request();
-  request.query('use CHOLOFLIX ;select * from MOVIES where MOVIE_ID='+req.params.MOVIE_ID+";", function (err, recordset) {
+    res.render("orders");
 
 
-    if (err) console.log(err);
+});
+
+
+app.get("/:MOVIE_ID/:PRICE", function (req, res) {
+
+  (async () => {
+    let movies=await messageHandler('use CHOLOFLIX ;select * from MOVIES where MOVIE_ID='+req.params.MOVIE_ID+";");
 
     res.render("rental",{
-      movie: recordset.recordsets[0][0]
+        movie: movies.recordsets[0][0]
     });
+  })()
 
-
-  });
 
 
 });
+
+app.post("/:MOVIE_ID/:PRICE",function(req, res){
+
+
+  let q="use CHOLOFLIX ; INSERT INTO ORDERS (RENTAL_DATE , RETURN_DATE, MOVIE_ID, NET_AMOUNT,DISCOUNT,GROSS_AMOUNT)"+"VALUES(\'"+rentalTime()+"\',\'"+rentalTime(1)+"\',"+req.params.MOVIE_ID+","+req.params.PRICE+","+0+","+req.params.PRICE+ ");";
+ messageHandler(q);
+
+})
 
 
 
