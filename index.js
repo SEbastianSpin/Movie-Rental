@@ -25,32 +25,75 @@ trustServerCertificate: true // change to true for local dev / self-signed certs
 
 
 // connect to your database
-sql.connect(config, function (err) {
-
-    if (err) console.log(err);
 
 
 
+function rentalTime(){
+  let ts = Date.now();
+  let date_ob = new Date(ts);
+  let date = date_ob.getDate();
+  let month = date_ob.getMonth() + 1;
+  let year = date_ob.getFullYear();
 
-});
+  //date & time in YYYY.MM.DD format
+  let RENTAL_DATE=year + "." + month + "." + date;
+
+  return RENTAL_DATE;
+}
+
+
 
 app.get('/', function (req, res) {
 
-  // create Request object
-  var request = new sql.Request();
-  // query to the database and get the records
-  request.query('use CHOLOFLIX ;select * from MOVIES', function (err, recordset) {
+
+  sql.connect(config, function (err) {
 
       if (err) console.log(err);
- 
-      // send records as a response
-      res.render("home",{
-        movie: recordset.recordsets[0][0]
+
+      // create Request object
+      var request = new sql.Request();
+      // query to the database and get the records
+      request.query('use CHOLOFLIX ;select * from MOVIES order by RATING DESC', function (err, recordset) {
+
+          if (err) console.log(err);
+
+          // send records as a response
+          res.render("home",{
+            mainmovie: recordset.recordsets[0][0],
+            movie: recordset.recordsets[0][1],
+            movie3:recordset.recordsets[0][2]
+          });
+
       });
+
 
   });
 
+
 });
+
+
+
+
+
+app.get("/:MOVIE_ID", function (req, res) {
+
+  var request = new sql.Request();
+  request.query('use CHOLOFLIX ;select * from MOVIES where MOVIE_ID='+req.params.MOVIE_ID+";", function (err, recordset) {
+
+
+    if (err) console.log(err);
+
+    res.render("rental",{
+      movie: recordset.recordsets[0][0]
+    });
+
+
+  });
+
+
+});
+
 
 
 
