@@ -82,10 +82,45 @@ app.get('/', function (req, res) {
 
 app.get('/orders', function (req, res) {
 
+  (async () => {
+    let orders=await messageHandler('use CHOLOFLIX ;select  ORDERS.ORDERS_ID, MOVIES.MOVIE_TITLE, ORDERS.RENTAL_DATE, ORDERS.RETURN_DATE,ORDERS.NET_AMOUNT ,ORDERS.DISCOUNT, ORDERS.GROSS_AMOUNT from ORDERS INNER JOIN MOVIES ON ORDERS.MOVIE_ID =MOVIES.MOVIE_ID;');
+
+    res.render("orders",{
+
+     orders:orders.recordsets[0]
+    });
+  })()
 
 
-    res.render("orders");
+});
 
+app.get('/movies', function (req, res) {
+
+  (async () => {
+    let movies=await messageHandler('use CHOLOFLIX; select * from MOVIES');
+
+    res.render("movies",{
+
+     orders:movies.recordsets[0]
+    });
+  })()
+
+
+});
+
+
+
+app.get('/movies/:init/:end/:name/:genra/:rat', function (req, res) {
+
+  console.log('use CHOLOFLIX; Select * from MOVIES m where YEAR ( m.RELEASE_DATE) >= '+ req.params.init + 'and YEAR( m.RELEASE_DATE) <='+ req.params.end + "and m.MOVIE_TITLE like \'\%"+req.params.name +"\%\'"+ "and m.GENRE =" + "\'" +req.params.genra + "\'"  +" and m.RATING >="+req.params.rat+";");
+
+  (async () => {
+  //  const movies=await messageHandler('use CHOLOFLIX; Select * from MOVIES m where YEAR ( m.RELEASE_DATE) >= '+ req.params.init + 'and YEAR( m.RELEASE_DATE) <= '+ req.params.end + "and m.MOVIE_TITLE like \'\%"+req.params.name +"\%\'"+ "and m.GENRE =" + "\'" +req.params.genra + "\'"  +" and m.RATING >="+req.params.rat+";");
+   const movies=await messageHandler('use CHOLOFLIX; Select * from MOVIES m where YEAR ( m.RELEASE_DATE) >= '+ req.params.init + 'and YEAR( m.RELEASE_DATE) <= '+ req.params.end + "and m.MOVIE_TITLE like \'\%"+req.params.name +"\%\'"+ "and m.GENRE =" + "\'" +req.params.genra + "\'"  +"order by RATING DESC");
+    res.render("movies",{
+     orders:movies.recordsets[0]
+    });
+  })()
 
 });
 
@@ -110,7 +145,9 @@ app.post("/:MOVIE_ID/:PRICE",function(req, res){
   let q="use CHOLOFLIX ; INSERT INTO ORDERS (RENTAL_DATE , RETURN_DATE, MOVIE_ID, NET_AMOUNT,DISCOUNT,GROSS_AMOUNT)"+"VALUES(\'"+rentalTime()+"\',\'"+rentalTime(1)+"\',"+req.params.MOVIE_ID+","+req.params.PRICE+","+0+","+req.params.PRICE+ ");";
  messageHandler(q);
 
-})
+});
+
+
 
 
 
